@@ -1,0 +1,29 @@
+{
+  "version_name": "loopi_v0_1",
+  "display_name": "Loopi v0.1 Seed",
+  "status": "superseded",
+  "pet_dna_version": "Loopi Pet DNA v1.0",
+  "asset_status": "static_seed_ready",
+  "image_url": "/assets/images/pets/loopi/v0-1/loopi-v0-1.webp",
+  "source_image_url": "/assets/images/pets/loopi/v0-1/loopi-v0-1-source.png",
+  "sprite_url": null,
+  "homepage_role": "secondary_companion",
+  "design_goal": "Validate whether an AI pony companion inspired by Zehua's zodiac sign fits yuanzehua.me.",
+  "changed_variables": [
+    "initial_species_direction",
+    "initial_ai_companion_tone"
+  ],
+  "locked_traits": [
+    "pony silhouette",
+    "silver-white body",
+    "blue-purple mane and tail",
+    "warm intelligent eyes",
+    "friendly but professional tone"
+  ],
+  "feedback_endpoint": "/api/pet-feedback",
+  "summary_endpoint": "/api/pet-feedback-summary?version=loopi_v0_1",
+  "pet_lab_url": "/pet-lab/",
+  "created_at": "2026-06-15T00:00:00Z",
+  "superseded_by": "loopi_v0_2",
+  "superseded_reason": "User feedback said the first visual felt too animal-like for a personal-brand virtual companion."
+}

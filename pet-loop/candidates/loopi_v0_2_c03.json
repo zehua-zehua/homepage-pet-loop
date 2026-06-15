@@ -1,0 +1,16 @@
+{
+  "candidate_id": "loopi_v0_2_c03",
+  "based_on_version": "loopi_v0_1",
+  "candidate_name": "AI Product Cue",
+  "status": "superseded_by_manual_v0_2",
+  "changed_variables": [
+    "smart collar detail",
+    "data cue intensity"
+  ],
+  "expected_improvement": [
+    "AI-native feeling",
+    "product-minded feeling"
+  ],
+  "risk_to_watch": "Could drift toward generic AI robot if the data cue becomes too literal.",
+  "prompt": "Superseded. The v0.2 direction changed manually from literal pony to virtual companion avatar after user feedback that the first visual felt too animal-like."
+}

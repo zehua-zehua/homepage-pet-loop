@@ -1,0 +1,16 @@
+{
+  "candidate_id": "loopi_v0_2_c02",
+  "based_on_version": "loopi_v0_1",
+  "candidate_name": "Professional Finish",
+  "status": "superseded_by_manual_v0_2",
+  "changed_variables": [
+    "material finish",
+    "body proportion"
+  ],
+  "expected_improvement": [
+    "professional trust",
+    "visual quality"
+  ],
+  "risk_to_watch": "Could become too distant if the expression loses warmth.",
+  "prompt": "Superseded. The v0.2 direction changed manually from literal pony to virtual companion avatar after user feedback that the first visual felt too animal-like."
+}

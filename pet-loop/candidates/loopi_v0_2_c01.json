@@ -1,0 +1,16 @@
+{
+  "candidate_id": "loopi_v0_2_c01",
+  "based_on_version": "loopi_v0_1",
+  "candidate_name": "Friendly Signal",
+  "status": "superseded_by_manual_v0_2",
+  "changed_variables": [
+    "expression",
+    "welcome pose"
+  ],
+  "expected_improvement": [
+    "friendliness",
+    "homepage first impression"
+  ],
+  "risk_to_watch": "Could become too cute if eyes or head-body ratio are exaggerated.",
+  "prompt": "Superseded. The v0.2 direction changed manually from literal pony to virtual companion avatar after user feedback that the first visual felt too animal-like."
+}

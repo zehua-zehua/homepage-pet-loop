@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pet Lab · Loopi</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+SC:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#1a1814; --paper:#f5f2ed; --mid:#8c8880; --light:#c8c4bc;
+  --faint:#e4e0d8; --accent:#2d4a3e; --accent-soft:rgba(45,74,62,.065);
+  --accent-rule:rgba(45,74,62,.22); --rule:rgba(26,24,20,.10);
+  --serif-en:'EB Garamond', Georgia, serif;
+  --serif-cn:'Noto Serif SC', STSong, serif;
+  --mono:'DM Mono', 'Courier New', monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--serif-cn);font-weight:300;line-height:1.85;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");background-size:200px;pointer-events:none;z-index:9999;opacity:.6}
+.page{max-width:960px;margin:0 auto;padding:56px clamp(28px,6vw,72px) 84px}
+.top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--rule);padding-bottom:22px;margin-bottom:72px}
+.brand{font-family:var(--serif-en);font-size:15px;font-style:italic;color:var(--ink);text-decoration:none;letter-spacing:.08em}
+.back{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--mid);text-decoration:none}
+.back:hover{color:var(--ink)}
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:clamp(40px,6vw,80px);align-items:end;border-bottom:1px solid var(--rule);padding-bottom:64px}
+.label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--light);display:block;margin-bottom:20px}
+h1{font-family:var(--serif-en);font-size:clamp(46px,8vw,82px);font-weight:400;font-style:italic;line-height:1;letter-spacing:-.01em;margin-bottom:24px}
+.intro{font-size:16px;line-height:2;color:var(--mid);max-width:620px;font-weight:400}
+.mascot{margin-top:32px;width:min(340px,100%)}
+.mascot img{display:block;width:100%;height:auto}
+.summary{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:24px 0}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:18px}
+.metric{background:var(--paper);padding:24px}
+.metric span{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--light);margin-bottom:8px}
+.metric strong{font-family:var(--serif-en);font-size:36px;font-weight:400;color:var(--accent)}
+.summary-status{font-size:14px;color:var(--mid);font-weight:400}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.pet-summary-tag{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);border:1px solid var(--rule);padding:4px 9px}
+.pet-summary-tag.is-empty{color:var(--light)}
+.pet-feedback{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:28px 0 30px}
+.pet-feedback-note{display:block;margin:-10px 0 22px;font-size:12px;line-height:1.8;color:var(--light);font-weight:400}
+.pet-feedback-sections{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.pet-feedback-section{background:var(--paper);padding:24px}
+.pet-feedback-section-title{display:block;margin-bottom:16px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mid)}
+.pet-question{border:0;padding:0;margin:0 0 22px;min-width:0}
+.pet-question:last-child{margin-bottom:0}
+.pet-question legend{padding:0;margin-bottom:10px;font-size:14px;line-height:1.75;color:var(--ink);font-weight:400}
+.pet-score-row{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.pet-score,.pet-submit{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--rule);background:transparent;color:var(--mid);cursor:pointer;transition:border-color .2s,color .2s,background .2s}
+.pet-score{height:34px}
+.pet-score[aria-pressed="true"]{border-color:var(--accent-rule);color:var(--accent);background:var(--accent-soft)}
+.pet-feedback textarea{width:100%;min-height:94px;resize:vertical;background:rgba(255,255,255,.14);border:1px solid var(--rule);color:var(--ink);padding:12px 14px;font-family:var(--serif-cn);font-size:14px;line-height:1.8;outline:none;margin:22px 0 14px}
+.pet-feedback textarea:focus{border-color:var(--accent-rule)}
+.pet-feedback-actions{display:grid;grid-template-columns:minmax(180px,240px) 1fr;gap:18px;align-items:center}
+.pet-submit{height:38px}
+.pet-submit:hover,.pet-submit:focus{color:var(--ink);border-color:var(--ink)}
+.pet-submit:disabled{opacity:.5;cursor:wait}
+.pet-feedback-status{font-size:12px;line-height:1.75;color:var(--light);font-weight:400}
+.section{padding:64px 0;border-bottom:1px solid var(--rule)}
+.section:last-child{border-bottom:none}
+h2{font-family:var(--serif-en);font-size:26px;font-style:italic;font-weight:400;margin-bottom:18px}
+.section-lead{font-size:14px;line-height:1.9;color:var(--mid);font-weight:400;margin-bottom:28px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.evaluation-steps{grid-template-columns:repeat(4,minmax(0,1fr))}
+.evaluation-steps .step{padding:24px}
+.step{background:var(--paper);padding:28px}
+.step em{display:block;font-family:var(--mono);font-style:normal;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--light);margin-bottom:12px}
+.step strong{display:block;font-size:15px;font-weight:400;margin-bottom:8px}
+.step p{font-size:13px;line-height:1.8;color:var(--mid);font-weight:400}
+.lab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.lab-panel{background:var(--paper);padding:28px}
+.lab-panel.wide{grid-column:1/-1}
+.panel-label{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--light);margin-bottom:12px}
+.panel-title{display:block;font-size:16px;font-weight:400;color:var(--ink);letter-spacing:.03em;margin-bottom:10px}
+.panel-copy{font-size:13px;line-height:1.85;color:var(--mid);font-weight:400}
+.kv{display:flex;flex-direction:column;border-top:1px solid var(--rule);margin-top:18px}
+.kv span{display:flex;justify-content:space-between;gap:18px;padding:10px 0;border-bottom:1px solid var(--rule);font-size:13px;color:var(--mid)}
+.kv strong{font-weight:400;color:var(--ink);text-align:right}
+.candidate-list{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.candidate{background:var(--paper);padding:24px}
+.candidate ul{list-style:none;display:flex;flex-direction:column;gap:7px;margin-top:14px}
+.candidate li{font-size:12px;line-height:1.6;color:var(--mid)}
+.candidate li::before{content:'— ';color:var(--light)}
+.timeline{display:flex;flex-direction:column;border-top:1px solid var(--rule)}
+.tl-row{display:grid;grid-template-columns:130px 1fr auto;gap:24px;padding:20px 0;border-bottom:1px solid var(--rule);align-items:start}
+.tl-date{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--light)}
+.tl-main strong{display:block;font-size:15px;font-weight:400;color:var(--ink);margin-bottom:5px}
+.tl-main span{font-size:13px;line-height:1.75;color:var(--mid)}
+.tl-status{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent-rule);padding:3px 8px;white-space:nowrap}
+.formula{font-family:var(--mono);font-size:10px;line-height:2;color:var(--mid);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:18px 0;overflow-wrap:anywhere}
+.file-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.file-chip{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);border:1px solid var(--rule);padding:4px 9px;text-decoration:none}
+.file-chip:hover{color:var(--ink);border-color:var(--ink)}
+@media(max-width:720px){.hero,.steps,.lab-grid,.candidate-list,.pet-feedback-sections,.pet-feedback-actions{grid-template-columns:1fr}.summary-grid{grid-template-columns:1fr}.lab-panel.wide{grid-column:auto}.tl-row{grid-template-columns:1fr;gap:8px}.tl-status{width:max-content}}
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="top">
+    <a class="brand" href="/">Zane Hua</a>
+    <a class="back" href="/#pet-loop">Back to home</a>
+  </div>
+
+  <section class="hero">
+    <div>
+      <span class="label">Homepage Pet Evolution System</span>
+      <h1>Pet Lab</h1>
+      <p class="intro">Loopi 是 yuanzehua.me 的进化型虚拟 AI companion。它保留生肖马的行动力来源，也吸收 ENFP 小狗式亲和感，并通过真实反馈持续迭代。</p>
+      <figure class="mascot" aria-label="Loopi v0.2 Companion avatar">
+        <img src="/assets/images/pets/loopi/v0-2/loopi-v0-2.webp" alt="Loopi v0.2 Companion，银白色蓝紫发束的虚拟 AI companion 形象">
+      </figure>
+    </div>
+    <div class="summary" data-pet-summary-panel data-version-name="loopi_v0_2">
+      <span class="label">Loopi v0.2 Companion</span>
+      <p class="summary-status" data-pet-summary-status>正在读取反馈统计...</p>
+      <div class="summary-grid">
+        <div class="metric">
+          <span>Feedback</span>
+          <strong data-pet-summary-count>--</strong>
+        </div>
+        <div class="metric">
+          <span>Avg Score</span>
+          <strong data-pet-summary-score>--</strong>
+        </div>
+      </div>
+      <span class="label">Dimension Scores</span>
+      <div class="tags" data-pet-summary-dimensions></div>
+      <div class="tags" data-pet-summary-tags></div>
+    </div>
+  </section>
+
+  <section class="section" id="loopi-feedback">
+    <h2>Loopi 首页反馈问卷 v1.0</h2>
+    <p class="section-lead">这组问题专门服务主页场景：不是单纯判断 Loopi 可不可爱，而是判断它作为 yuanzehua.me 的 AI 虚拟形象是否好看、适配、可信，并且能不能传达站主的气质。</p>
+    <form class="pet-feedback" data-pet-feedback data-version-name="loopi_v0_2">
+      <span class="pet-feedback-note">评分说明：1 = 非常不同意，3 = 一般，5 = 非常同意</span>
+
+      <div class="pet-feedback-sections">
+        <div class="pet-feedback-section">
+          <span class="pet-feedback-section-title">A. 视觉第一印象</span>
+          <fieldset class="pet-question" data-pet-question="q1_visual_beauty" data-pet-dimension="visual_first_impression" data-pet-question-label="Loopi 整体看起来是好看的。">
+            <legend>1. Loopi 整体看起来是好看的。</legend>
+            <div class="pet-score-row" aria-label="Loopi 整体看起来是好看的。">
+              <button type="button" class="pet-score" data-pet-question-score="1" aria-pressed="false">1</button>
+              <button type="button" class="pet-score" data-pet-question-score="2" aria-pressed="false">2</button>
+              <button type="button" class="pet-score" data-pet-question-score="3" aria-pressed="false">3</button>
+              <button type="button" class="pet-score" data-pet-question-score="4" aria-pressed="false">4</button>
+              <button type="button" class="pet-score" data-pet-question-score="5" aria-pressed="false">5</button>
+            </div>
+          </fieldset>
+          <fieldset class="pet-question" data-pet-question="q2_visual_quality_professional" data-pet-dimension="visual_first_impression" data-pet-question-label="Loopi 的视觉质感适合一个专业个人主页。">
+            <legend>2. Loopi 的视觉质感适合一个专业个人主页。</legend>
+            <div class="pet-score-row" aria-label="Loopi 的视觉质感适合一个专业个人主页。">
+              <button type="button" class="pet-score" data-pet-question-score="1" aria-pressed="false">1</button>
+              <button type="button" class="pet-score" data-pet-question-score="2" aria-pressed="false">2</button>
+              <button type="button" class="pet-score" data-pet-question-score="3" aria-pressed="false">3</button>
+              <button type="button" class="pet-score" data-pet-question-score="4" aria-pressed="false">4</button>
+              <button type="button" class="pet-score" data-pet-question-score="5" aria-pressed="false">5</button>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="pet-feedback-section">
+          <span class="pet-feedback-section-title">B. 主页适配度</span>
+          <fieldset class="pet-question" data-pet-question="q3_homepage_not_abrupt" data-pet-dimension="homepage_fit" data-pet-question-label="Loopi 放在 yuanzehua.me 首页不会显得突兀。">
+            <legend>3. Loopi 放在 yuanzehua.me 首页不会显得突兀。</legend>
+            <div class="pet-score-row" aria-label="Loopi 放在 yuanzehua.me 首页不会显得突兀。">
+              <button type="button" class="pet-score" data-pet-question-score="1" aria-pressed="false">1</button>
+              <button type="button" class="pet-score" data-pet-question-score="2" aria-pressed="false">2</button>
+              <button type="button" class="pet-score" data-pet-question-score="3" aria-pressed="false">3</button>
+              <button type="button" class="pet-score" data-pet-question-score="4" aria-pressed="false">4</button>
+              <button type="button" class="pet-score" data-pet-question-score="5" aria-pressed="false">5</button>
+            </div>
+          </fieldset>
+          <fieldset class="pet-question" data-pet-question="q4_first_impression_not_distracting" data-pet-dimension="homepage_fit" data-pet-question-label="Loopi 会增强我对站主的第一印象，而不是分散注意力。">
+            <legend>4. Loopi 会增强我对站主的第一印象，而不是分散注意力。</legend>
+            <div class="pet-score-row" aria-label="Loopi 会增强我对站主的第一印象，而不是分散注意力。">
+              <button type="button" class="pet-score" data-pet-question-score="1" aria-pressed="false">1</button>
+              <button type="button" class="pet-score" data-pet-question-score="2" aria-pressed="false">2</button>
+              <button type="button" class="pet-score" data-pet-question-score="3" aria-pressed="false">3</button>
+              <button type="button" class="pet-score" data-pet-question-score="4" aria-pressed="false">4</button>
+              <button type="button" class="pet-score" data-pet-question-score="5" aria-pressed="false">5</button>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="pet-feedback-section">
+          <span class="pet-feedback-section-title">C. 个人气质匹配</span>
+          <fieldset class="pet-question" data-pet-question="q5_ai_curiosity_exploration" data-pet-dimension="personal_fit" data-pet-question-label="Loopi 让我觉得站主是一个有好奇心、愿意探索 AI 的人。">
+            <legend>5. Loopi 让我觉得站主是一个有好奇心、愿意探索 AI 的人。</legend>
+            <div class="pet-score-row" aria-label="Loopi 让我觉得站主是一个有好奇心、愿意探索 AI 的人。">
+              <button type="button" class="pet-score" data-pet-question-score="1" aria-pressed="false">1</button>
+              <button type="button" class="pet-score" data-pet-question-score="2" aria-pressed="false">2</button>
+              <button type="button" class="pet-score" data-pet-question-score="3" aria-pressed="false">3</button>
+              <button type="button" class="pet-score" data-pet-question-score="4" aria-pressed="false">4</button>
+              <button type="button" class="pet-score" data-pet-question-score="5" aria-pressed="false">5</button>
+            </div>
+          </fieldset>
+          <fieldset class="pet-question" data-pet-question="q6_friendliness_approachable" data-pet-dimension="personal_fit" data-pet-question-label="Loopi 让我觉得站主有亲和力，也比较容易交流。">
+            <legend>6. Loopi 让我觉得站主有亲和力，也比较容易交流。</legend>
+            <div class="pet-score-row" aria-label="Loopi 让我觉得站主有亲和力，也比较容易交流。">
+              <button type="button" class="pet-score" data-pet-question-score="1" aria-pressed="false">1</button>
+              <button type="button" class="pet-score" data-pet-question-score="2" aria-pressed="false">2</button>
+              <button type="button" class="pet-score" data-pet-question-score="3" aria-pressed="false">3</button>
+              <button type="button" class="pet-score" data-pet-question-score="4" aria-pressed="false">4</button>
+              <button type="button" class="pet-score" data-pet-question-score="5" aria-pressed="false">5</button>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="pet-feedback-section">
+          <span class="pet-feedback-section-title">D. 小马 + 小狗设定</span>
+          <fieldset class="pet-question" data-pet-question="q7_pony_momentum_growth" data-pet-dimension="pony_dog_concept" data-pet-question-label="Loopi 能让我感受到“小马”的行动力、成长感和向前感。">
+            <legend>7. Loopi 能让我感受到“小马”的行动力、成长感和向前感。</legend>
+            <div class="pet-score-row" aria-label="Loopi 能让我感受到小马的行动力、成长感和向前感。">
+              <button type="button" class="pet-score" data-pet-question-score="1" aria-pressed="false">1</button>
+              <button type="button" class="pet-score" data-pet-question-score="2" aria-pressed="false">2</button>
+              <button type="button" class="pet-score" data-pet-question-score="3" aria-pressed="false">3</button>
+              <button type="button" class="pet-score" data-pet-question-score="4" aria-pressed="false">4</button>
+              <button type="button" class="pet-score" data-pet-question-score="5" aria-pressed="false">5</button>
+            </div>
+          </fieldset>
+          <fieldset class="pet-question" data-pet-question="q8_dog_warmth_companionship" data-pet-dimension="pony_dog_concept" data-pet-question-label="Loopi 能让我感受到“小狗”式的亲和、快乐和陪伴感。">
+            <legend>8. Loopi 能让我感受到“小狗”式的亲和、快乐和陪伴感。</legend>
+            <div class="pet-score-row" aria-label="Loopi 能让我感受到小狗式的亲和、快乐和陪伴感。">
+              <button type="button" class="pet-score" data-pet-question-score="1" aria-pressed="false">1</button>
+              <button type="button" class="pet-score" data-pet-question-score="2" aria-pressed="false">2</button>
+              <button type="button" class="pet-score" data-pet-question-score="3" aria-pressed="false">3</button>
+              <button type="button" class="pet-score" data-pet-question-score="4" aria-pressed="false">4</button>
+              <button type="button" class="pet-score" data-pet-question-score="5" aria-pressed="false">5</button>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+
+      <textarea data-pet-feedback-text maxlength="500" placeholder="比如更像小马一点、更有 AI 感、更专业一点、更温暖一点、减少幼态……"></textarea>
+      <div class="pet-feedback-actions">
+        <button type="submit" class="pet-submit" data-pet-feedback-submit>Submit Feedback</button>
+        <span class="pet-feedback-status" data-pet-feedback-status>反馈会匿名保存，用来帮助 Loopi 迭代。</span>
+      </div>
+    </form>
+  </section>
+
+  <section class="section">
+    <h2>Current Version</h2>
+    <p class="section-lead">MVP 阶段用 Pet Lab 的 8 题首页反馈问卷验证 Loopi 是否好看、是否适配专业个人主页、是否匹配站主气质，以及“小马 + 小狗”的角色设定是否成立。版本、候选、报告保存在仓库中；数据库只保存真实访客反馈。</p>
+    <div class="lab-grid">
+      <div class="lab-panel">
+        <span class="panel-label">Active</span>
+        <strong class="panel-title">Loopi v0.2 Companion</strong>
+        <p class="panel-copy">根据“过分拟动物”的反馈，v0.2 从四足小马转向站立的虚拟 companion。马的来源收进发束、尾部能量和行动感，小狗元素只保留为亲和气质。</p>
+        <div class="kv">
+          <span>DNA <strong>v1.1</strong></span>
+          <span>Status <strong>Active</strong></span>
+          <span>Asset <strong>Avatar seed ready</strong></span>
+        </div>
+      </div>
+      <div class="lab-panel">
+        <span class="panel-label">Locked Traits</span>
+        <strong class="panel-title">不可漂移的角色基因</strong>
+        <p class="panel-copy">虚拟 AI companion 优先、生肖马行动力来源、ENFP 式温暖好奇、银白主体、蓝紫发束与尾部能量、温和聪明的眼睛、轻科技标记，以及不削弱职业可信度的主页适配性。</p>
+        <div class="file-list">
+          <a class="file-chip" href="/pet-loop/pet-dna.md">Pet DNA</a>
+          <a class="file-chip" href="/pet-loop/versions/loopi_v0_2.json">Version JSON</a>
+          <a class="file-chip" href="/pet-loop/reports/2026-06-15-loopi-v0-2.md">Evolution Report</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>How Loopi Evolves</h2>
+    <div class="steps">
+      <div class="step">
+        <em>01</em>
+        <strong>收集真实反馈</strong>
+        <p>Pet Lab 收集 8 个 1-5 分评价和一个可选建议；系统保存平均分，并把每题分数作为结构化标签进入同一张反馈表。</p>
+      </div>
+      <div class="step">
+        <em>02</em>
+        <strong>生成分析报告</strong>
+        <p>Codex 定期读取总分、每题均分、四个维度均分和开放建议，归纳当前版本的优势、问题和下一轮方向。</p>
+      </div>
+      <div class="step">
+        <em>03</em>
+        <strong>候选进入审核</strong>
+        <p>新版本先进入 Pet Lab，只有人工确认后才会替换首页主形象。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Candidate Queue</h2>
+    <p class="section-lead">下一轮候选会围绕 v0.2 的问卷低分项继续微调。每个候选只改变 1-2 个变量，并明确对应要提升的题目或维度。</p>
+    <div class="candidate-list">
+      <div class="candidate">
+        <span class="panel-label">v0.3 c01</span>
+        <strong class="panel-title">Avatar Maturity</strong>
+        <p class="panel-copy">降低玩偶感，让虚拟 companion 更像个人品牌资产。</p>
+        <ul>
+          <li>调整眼睛比例</li>
+          <li>调整身体材质</li>
+          <li>风险：亲和力下降</li>
+        </ul>
+      </div>
+      <div class="candidate">
+        <span class="panel-label">v0.3 c02</span>
+        <strong class="panel-title">ENFP Warmth</strong>
+        <p class="panel-copy">增强开放、好奇、热情的第一印象，但避免变成普通小狗。</p>
+        <ul>
+          <li>调整微笑</li>
+          <li>调整耳朵姿态</li>
+          <li>风险：太像宠物</li>
+        </ul>
+      </div>
+      <div class="candidate">
+        <span class="panel-label">v0.3 c03</span>
+        <strong class="panel-title">AI Product Cue</strong>
+        <p class="panel-copy">增强轻科技与 AI Product 气质，但避免变成通用机器人。</p>
+        <ul>
+          <li>调整智能项圈</li>
+          <li>调整发光标记强度</li>
+          <li>风险：AI 感过度</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Homepage Evaluation Model</h2>
+    <p class="section-lead">主页场景里，Loopi 不是单纯“可不可爱”的宠物评分，而是用 8 题问卷判断它作为个人品牌虚拟形象是否成立。每题 1-5 分：1 = 非常不同意，3 = 一般，5 = 非常同意。</p>
+    <div class="formula">
+      总分 = 8 题平均分；维度 = 视觉第一印象、主页适配度、个人气质匹配、小马 + 小狗设定
+    </div>
+    <div class="steps evaluation-steps">
+      <div class="step">
+        <em>A</em>
+        <strong>视觉第一印象</strong>
+        <p>判断 Loopi 是否好看，以及视觉质感是否适合一个专业个人主页。</p>
+      </div>
+      <div class="step">
+        <em>B</em>
+        <strong>主页适配度</strong>
+        <p>判断 Loopi 放在 yuanzehua.me 是否自然，并且增强第一印象而不是分散注意力。</p>
+      </div>
+      <div class="step">
+        <em>C</em>
+        <strong>个人气质匹配</strong>
+        <p>判断它是否传达好奇、AI 探索、亲和、容易交流的站主气质。</p>
+      </div>
+      <div class="step">
+        <em>D</em>
+        <strong>小马 + 小狗设定</strong>
+        <p>判断它是否同时保留小马的行动力、成长感、向前感，以及小狗式亲和、快乐、陪伴感。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Version Timeline</h2>
+    <div class="timeline">
+      <div class="tl-row">
+        <span class="tl-date">2026.06.15</span>
+        <span class="tl-main">
+          <strong>Loopi v0.1 Seed</strong>
+          <span>反馈数据库、首页反馈入口、Pet Lab 与角色 DNA 上线。</span>
+        </span>
+        <span class="tl-status">Archived</span>
+      </div>
+      <div class="tl-row">
+        <span class="tl-date">2026.06.15</span>
+        <span class="tl-main">
+          <strong>Loopi v0.2 Companion</strong>
+          <span>根据“太动物化”的人工反馈，切换到更像虚拟形象的站立 companion，并加入轻量 ENFP 小狗式亲和。</span>
+        </span>
+        <span class="tl-status">Active</span>
+      </div>
+      <div class="tl-row">
+        <span class="tl-date">Next</span>
+        <span class="tl-main">
+          <strong>Loopi v0.3 Candidate Review</strong>
+          <span>基于 v0.2 反馈，判断是否继续增强成熟感、亲和力或 AI Product cue。</span>
+        </span>
+        <span class="tl-status">Planned</span>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="/assets/pet-feedback.js"></script>
+</body>
+</html>
