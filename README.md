@@ -24,6 +24,11 @@ homepage-pet-loop/
 │   ├── versions/                # Version records (v0.1, v0.2, ...)
 │   ├── candidates/              # Candidate records with generation prompts
 │   ├── reports/                 # Iteration reports with feedback analysis
+│   ├── feedback/                # Public-safe feedback snapshots
+│   ├── evaluations/             # Rule-based iteration decisions
+│   ├── generations/             # Candidate batch metadata
+│   ├── selections/              # Staging recommendations
+│   ├── rules/                   # Evolution thresholds and guardrails
 │   ├── prompts/                 # Agent prompts (generation, selection, reporting)
 │   └── db/
 │       └── schema.sql           # Cloudflare D1 schema
@@ -41,10 +46,19 @@ homepage-pet-loop/
 │   └── pet-feedback-export.js   # Admin-only raw export API
 │
 ├── scripts/
-│   └── generate-pet-report.js   # Pull deployed feedback, write local reports
+│   ├── run-pet-evolution-loop.js        # Full four-agent loop
+│   ├── run-pet-feedback-collector.js    # Feedback Collector Agent
+│   ├── run-pet-evaluation.js            # Evaluation Agent
+│   ├── run-pet-generation.js            # Generation Agent
+│   ├── run-pet-selection.js             # Selection Agent
+│   └── generate-pet-report.js           # Legacy report helper
 │
 ├── docs/
-│   └── pet-database-setup.md    # D1 setup guide
+│   ├── pet-database-setup.md    # D1 setup guide
+│   └── pet-evolution-loop.md    # Loop workflow guide
+│
+├── .github/workflows/
+│   └── pet-evolution-loop.yml   # Weekly / manual scheduled loop
 │
 └── agent.md                     # Full system agent guide
 ```
@@ -60,11 +74,11 @@ Deliberately simple MVP:
 
 **Step 1 — Collect Feedback.** Visitors rate Loopi on an 8-question survey covering four dimensions: visual first impression, homepage fit, personal temperament match, and the pony + puppy concept hybrid. Each question is 1-5 scale.
 
-**Step 2 — Analyze.** A feedback evaluation agent reads scores, computes question and dimension averages, summarizes open-text feedback, and writes a structured report.
+**Step 2 — Evaluate.** The Evaluation Agent reads scores, computes question and dimension averages, checks red lines, and decides whether to keep, watch, or generate candidates.
 
-**Step 3 — Generate Candidates.** When a dimension underperforms, a generation agent creates exactly three candidates, each changing only 1-2 visual variables and naming which survey question it targets.
+**Step 3 — Generate Candidates.** When a dimension underperforms, the Generation Agent creates exactly three candidates, each changing only 1-2 visual variables and naming which survey question it targets.
 
-**Step 4 — Select & Review.** A selection agent checks candidates against red lines (no dimension decrease, Pet DNA consistency >= 4/5, no attention theft from homepage owner). Human approval is required before homepage production.
+**Step 4 — Select & Review.** The Selection Agent checks candidates against red lines, Pet DNA consistency, homepage fit, and animation feasibility. Human approval is required before homepage production.
 
 **Step 5 — Deploy.** New versions go to Pet Lab first (staging). Only after explicit approval do they replace the homepage image.
 
@@ -79,14 +93,57 @@ The 8-question survey measures four dimensions:
 | C. Personal Temperament | Q5, Q6 | Does Loopi convey curiosity, warmth, and approachability? |
 | D. Pony + Puppy Concept | Q7, Q8 | Can visitors read the hybrid zodiac-horse + ENFP-dog identity? |
 
-Red lines: no dimension may drop below the current version; Q2 and Q4 must stay above 3.5; Pet DNA must not drift.
+Red lines: homepage fit and visual first impression must stay above 3.5, the hybrid pony/dog concept must stay readable, and Pet DNA must not drift.
 
 ## Current Status
 
 - **Active version:** `loopi_v0_2` (Companion)
 - **v0.1** was a four-legged pony — feedback said "too animal-like"
 - **v0.2** shifted to a standing virtual companion with pony-origin energy in the hair and tail, plus subtle ENFP puppy warmth
-- **v0.3 candidates** are queued in three lanes: Avatar Maturity, ENFP Warmth, AI Product Cue
+- **Latest feedback snapshot:** 36 public feedback rows, average score 4.03
+- **Latest loop decision:** generate v0.3 candidates and stage the conservative repair candidate
+- **Recommended staging candidate:** `loopi_v0_3_auto_20260616_c01`
+- **Recommended v0.3 variables:** forward stance + material finish
+
+## Running The Loop
+
+Run the full four-agent workflow:
+
+```bash
+node scripts/run-pet-evolution-loop.js loopi_v0_2
+```
+
+Run with protected raw export access:
+
+```bash
+PET_ADMIN_TOKEN=your-token node scripts/run-pet-evolution-loop.js loopi_v0_2
+```
+
+Run individual agents:
+
+```bash
+node scripts/run-pet-feedback-collector.js loopi_v0_2
+node scripts/run-pet-evaluation.js loopi_v0_2
+node scripts/run-pet-generation.js loopi_v0_2
+node scripts/run-pet-selection.js loopi_v0_2
+```
+
+The scheduled GitHub workflow can run weekly or manually from GitHub Actions. Add `PET_ADMIN_TOKEN` as a GitHub secret if protected export access is needed. Without it, the loop still works from public aggregate feedback.
+
+## Dynamic Loopi Direction
+
+The recommended animation path is a lightweight 3D-style spritesheet, not a full realtime 3D model:
+
+```text
+static Loopi image
+→ multi-state spritesheet
+→ CSS/JS frame animation
+→ homepage state machine
+→ visitor feedback
+→ evolution loop
+```
+
+The first animated MVP should prioritize `idle`, `wave`, `thinking`, `happy`, and a static fallback. Animation should remain calm enough for a professional personal homepage.
 
 ## Vibe Coding Workflow
 
